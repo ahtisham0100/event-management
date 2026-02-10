@@ -1,56 +1,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import type { Activity } from "@/types/dashboard-types";
 
-interface ActivityItem {
-    id: string;
-    user: {
-        name: string;
-        avatar?: string;
-        email: string;
-    };
-    action: string;
-    target?: string;
-    timestamp: string;
+interface RecentActivityFeedProps {
+    activities: Activity[];
 }
 
-const mockActivities: ActivityItem[] = [
-    {
-        id: "1",
-        user: { name: "Alice Smith", email: "alice@example.com" },
-        action: "registered as a new organizer",
-        timestamp: "2 minutes ago",
-    },
-    {
-        id: "2",
-        user: { name: "Bob Jones", email: "bob@example.com" },
-        action: "created a new event",
-        target: "Tech Conference 2026",
-        timestamp: "15 minutes ago",
-    },
-    {
-        id: "3",
-        user: { name: "Charlie Day", email: "charlie@example.com" },
-        action: "upgraded subscription to",
-        target: "Pro Plan",
-        timestamp: "1 hour ago",
-    },
-    {
-        id: "4",
-        user: { name: "System", email: "system@admin.com" },
-        action: "Automatic backup completed",
-        timestamp: "3 hours ago",
-    },
-    {
-        id: "5",
-        user: { name: "David Lee", email: "david@example.com" },
-        action: "requested a payout of",
-        target: "$5,000",
-        timestamp: "5 hours ago",
-    },
-];
-
-export function RecentActivityFeed() {
+export function RecentActivityFeed({ activities }: RecentActivityFeedProps) {
     return (
         <Card className="col-span-3">
             <CardHeader>
@@ -61,28 +18,34 @@ export function RecentActivityFeed() {
             </CardHeader>
             <CardContent>
                 <ScrollArea className="h-[400px] w-full pr-4">
-                    <div className="space-y-8">
-                        {mockActivities.map((activity) => (
-                            <div key={activity.id} className="flex items-start gap-4">
-                                <Avatar className="h-9 w-9">
-                                    <AvatarImage src={activity.user.avatar} alt={activity.user.name} />
-                                    <AvatarFallback>{activity.user.name[0]}</AvatarFallback>
-                                </Avatar>
-                                <div className="ml-4 space-y-1">
-                                    <p className="text-sm font-medium leading-none">
-                                        {activity.user.name}{" "}
-                                        <span className="text-muted-foreground font-normal">
-                                            {activity.action}
-                                        </span>{" "}
-                                        {activity.target && <span className="font-medium">{activity.target}</span>}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                        {activity.timestamp}
-                                    </p>
+                    {activities.length === 0 ? (
+                        <div className="flex items-center justify-center h-[200px]">
+                            <p className="text-sm text-muted-foreground">No recent activity</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-8">
+                            {activities.map((activity) => (
+                                <div key={activity.id} className="flex items-start gap-4">
+                                    <Avatar className="h-9 w-9">
+                                        <AvatarFallback>{activity.user?.[0] || "S"}</AvatarFallback>
+                                    </Avatar>
+                                    <div className="ml-4 space-y-1">
+                                        <p className="text-sm font-medium leading-none">
+                                            {activity.user && (
+                                                <span className="font-medium">{activity.user}{" "}</span>
+                                            )}
+                                            <span className="text-muted-foreground font-normal">
+                                                {activity.message}
+                                            </span>
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {new Date(activity.timestamp).toLocaleString()}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </ScrollArea>
             </CardContent>
         </Card>

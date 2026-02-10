@@ -1,22 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
+import type { SystemHealth } from "@/types/dashboard-types";
 
-interface ServiceStatus {
-    name: string;
-    status: "healthy" | "degraded" | "down";
-    uptime: string;
+interface SystemHealthMonitorProps {
+    health: SystemHealth;
 }
 
-const services: ServiceStatus[] = [
-    { name: "Database", status: "healthy", uptime: "99.99%" },
-    { name: "Redis Cache", status: "healthy", uptime: "99.95%" },
-    { name: "API Gateway", status: "degraded", uptime: "98.50%" },
-    { name: "Storage", status: "healthy", uptime: "100%" },
-    { name: "Email Service", status: "healthy", uptime: "99.99%" },
-];
+type ServiceStatus = "healthy" | "degraded" | "down";
 
-const StatusIcon = ({ status }: { status: ServiceStatus["status"] }) => {
+const StatusIcon = ({ status }: { status: ServiceStatus }) => {
     switch (status) {
         case "healthy":
             return <CheckCircle2 className="h-4 w-4 text-green-500" />;
@@ -27,7 +20,25 @@ const StatusIcon = ({ status }: { status: ServiceStatus["status"] }) => {
     }
 };
 
-export function SystemHealthMonitor() {
+export function SystemHealthMonitor({ health }: SystemHealthMonitorProps) {
+    // Map backend health status to service status type
+    const getServiceStatus = (status: string): ServiceStatus => {
+        if (status.toLowerCase() === "healthy") return "healthy";
+        if (status.toLowerCase() === "degraded") return "degraded";
+        return "down";
+    };
+
+    const services = [
+        { name: "Database", status: getServiceStatus(health.database_status) },
+        { name: "Redis Cache", status: getServiceStatus(health.redis_status) },
+        { name: "Celery", status: getServiceStatus(health.celery_status) },
+        { name: "Elasticsearch", status: getServiceStatus(health.elasticsearch_status) },
+    ];
+
+    const storagePercentage = health.storage_limit_gb > 0
+        ? Math.round((health.storage_used_gb / health.storage_limit_gb) * 100)
+        : 0;
+
     return (
         <Card className="col-span-3 lg:col-span-2">
             <CardHeader>
@@ -42,24 +53,18 @@ export function SystemHealthMonitor() {
                                 <span className="text-sm font-medium">{service.name}</span>
                             </div>
                             <div className="flex items-center space-x-4">
-                                <span className="text-xs text-muted-foreground">{service.uptime} uptime</span>
-                                {service.name === "Storage" && <Progress value={45} className="w-[60px]" />}
+                                <span className="text-xs text-muted-foreground capitalize">{service.status}</span>
                             </div>
                         </div>
                     ))}
                     <div className="mt-4 pt-4 border-t">
                         <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">CPU Usage</span>
-                            <span className="font-medium">32%</span>
+                            <span className="text-muted-foreground">Storage Usage</span>
+                            <span className="font-medium">
+                                {health.storage_used_gb}GB / {health.storage_limit_gb}GB ({storagePercentage}%)
+                            </span>
                         </div>
-                        <Progress value={32} className="mt-2 h-2" />
-                    </div>
-                    <div className="mt-2">
-                        <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Memory Usage</span>
-                            <span className="font-medium">64%</span>
-                        </div>
-                        <Progress value={64} className="mt-2 h-2" />
+                        <Progress value={storagePercentage} className="mt-2 h-2" />
                     </div>
                 </div>
             </CardContent>
