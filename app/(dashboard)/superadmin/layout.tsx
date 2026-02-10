@@ -72,16 +72,14 @@ export default function SuperAdminLayout({
     <div className="flex h-screen bg-zinc-50">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-zinc-200 bg-white transition-transform duration-300 md:relative md:translate-x-0 ${
-          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-        } ${sidebarOpen ? 'w-64' : 'w-20'}`}
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-zinc-200 bg-white transition-transform duration-300 md:relative md:translate-x-0 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          } ${sidebarOpen ? 'w-64' : 'w-20'}`}
       >
         {/* Sidebar Header */}
         <div className="flex items-center justify-between border-b border-zinc-200 p-4">
           <div
-            className={`flex items-center gap-2 overflow-hidden transition-all ${
-              sidebarOpen ? 'w-full' : 'w-0'
-            }`}
+            className={`flex items-center gap-2 overflow-hidden transition-all ${sidebarOpen ? 'w-full' : 'w-0'
+              }`}
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
               <BarChart3 size={20} />
@@ -119,17 +117,15 @@ export default function SuperAdminLayout({
                       <Link
                         href={item.href}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors ${
-                          isActive
+                        className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors ${isActive
                             ? 'bg-indigo-600 text-white'
                             : 'text-zinc-700 hover:bg-zinc-100'
-                        }`}
+                          }`}
                       >
                         <Icon size={20} className="flex-shrink-0" />
                         <span
-                          className={`whitespace-nowrap transition-opacity ${
-                            sidebarOpen ? 'opacity-100' : 'opacity-0'
-                          }`}
+                          className={`whitespace-nowrap transition-opacity ${sidebarOpen ? 'opacity-100' : 'opacity-0'
+                            }`}
                         >
                           {item.label}
                         </span>
@@ -149,9 +145,8 @@ export default function SuperAdminLayout({
               {sidebarOpen ? 'Status' : ''}
             </p>
             <p
-              className={`text-sm font-semibold text-indigo-600 ${
-                sidebarOpen ? '' : 'hidden'
-              }`}
+              className={`text-sm font-semibold text-indigo-600 ${sidebarOpen ? '' : 'hidden'
+                }`}
             >
               Operational
             </p>
@@ -186,6 +181,36 @@ export default function SuperAdminLayout({
                   System {getSystemStatus()}
                 </span>
               </div>
+
+              {/* Logout Button */}
+              <button
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('refresh_token');
+                    window.location.href = '/login';
+                  }
+                }}
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 transition-colors"
+                aria-label="Logout"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                <span className="hidden sm:inline">Logout</span>
+              </button>
             </div>
           </div>
         </header>

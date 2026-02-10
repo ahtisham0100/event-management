@@ -56,7 +56,7 @@ export default function LoginForm() {
             // Redirect based on role - UPDATED to match backend enums (SUPER_ADMIN)
             switch (response.user.role) {
                 case 'SUPER_ADMIN':
-                    router.push('/super-admin')
+                    router.push('/superadmin')
                     break;
                 case 'ORGANIZER':
                     router.push('/organizer') // placeholder
